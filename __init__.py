@@ -58,8 +58,9 @@ class LIGGGHTS_OT_AddMovingObject(bpy.types.Operator):
 
     def execute(self, context):
         scene = context.scene
+        existing_names = {item.name for item in scene.liggghts_moving_objects}
         for obj in context.selected_objects:
-            if obj not in scene.liggghts_moving_objects:
+            if obj.name not in existing_names:
                 item = scene.liggghts_moving_objects.add()
                 item.name = obj.name
         return {'FINISHED'}
