@@ -141,7 +141,7 @@ def write_run_file(filepath, simulation_params, moving_objects, frame_rate, defo
             file.write("compute fc all wall/gran/local id pos force\n\n")
 
         file.write("#----------DUMP FILES----------#\n")
-        file.write("dump dmp all custom $e post/dump*.bin id x y z radius\n")
+        file.write("dump dmp all custom $e post/dump*.txt id x y z radius\n")
         file.write("dump dumpstl1 all mesh/vtk $e post/footcomp2_*.vtk id")
         for obj in moving_objects:
             file.write(f" {obj.name}")
