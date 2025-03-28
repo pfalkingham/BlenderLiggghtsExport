@@ -174,20 +174,29 @@ def write_run_file(filepath, simulation_params, moving_objects, frame_rate, defo
             for obj in moving_objects:
                 prev_frame = frame - 1
                 scene.frame_set(prev_frame)
-                prev_location = obj.matrix_world.translation
-                prev_rotation = obj.matrix_world.to_euler()
+                prev_location = obj.matrix_world.translation.copy()
 
                 scene.frame_set(frame)
-                curr_location = obj.matrix_world.translation
-                curr_rotation = obj.matrix_world.to_euler()
+                curr_location = obj.matrix_world.translation.copy()
 
                 translation = curr_location - prev_location
+
+                # Debug: Print frame and object information
+                print(f"Frame: {frame}, Object: {obj.name}")
+                print(f"Previous Location: {prev_location}, Current Location: {curr_location}")
+                print(f"Translation: {translation}")
+
+                prev_rotation = obj.matrix_world.to_euler()
+                scene.frame_set(frame)
+                curr_rotation = obj.matrix_world.to_euler()
 
                 prev_rotation_quat = prev_rotation.to_quaternion()
                 curr_rotation_quat = curr_rotation.to_quaternion()
                 rotation_diff_quat = curr_rotation_quat.rotation_difference(prev_rotation_quat)
 
                 axis, angle = rotation_diff_quat.axis, rotation_diff_quat.angle
+                print(f"Rotation Axis: {axis}, Angle: {angle}")
+
                 if angle > 0:
                     period = 360 / (angle * frame_rate)
                     file.write(f"fix rotate_{obj.name}_{frame} all move/mesh mesh {obj.name} rotate origin {format_float(prev_location.x)} {format_float(prev_location.y)} {format_float(prev_location.z)} axis {format_float(axis.x)} {format_float(axis.y)} {format_float(axis.z)} period {format_float(period)}\n")
