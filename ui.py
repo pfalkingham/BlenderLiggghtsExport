@@ -48,8 +48,9 @@ class LIGGGHTS_PT_MainPanel(bpy.types.Panel):
 
         # Generate Buttons
         layout.label(text="Generate LIGGGHTS Input Files:")
-        layout.operator("liggghts.generate_deformable", text="Deformable Mesh")
-        layout.operator("liggghts.generate_rigid", text="Rigid Mesh")
+        row = layout.row()
+        row.operator("liggghts.generate_input", text="Deformable Mesh").deformable = True
+        row.operator("liggghts.generate_input", text="Rigid Mesh").deformable = False
 
 # Register the panel
 def register():

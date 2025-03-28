@@ -3,6 +3,7 @@ from .ui import LIGGGHTS_PT_MainPanel
 from .operators.generate_rigid_input import LIGGGHTS_OT_GenerateRigidInput
 from .operators.generate_deformable_input import LIGGGHTS_OT_GenerateDeformableInput
 from .utils.file_writer import write_setup_file, write_run_file
+from .utils.generate_input import LIGGGHTS_OT_GenerateInput
 
 bl_info = {
     "name": "LIGGGHTS Addon",
@@ -121,8 +122,8 @@ def register():
     bpy.utils.register_class(LIGGGHTS_OT_SetTray)
     bpy.utils.register_class(LIGGGHTS_OT_SetInsertionVolume)
     bpy.utils.register_class(LIGGGHTS_OT_SetSimulationVolume)
-    bpy.utils.register_class(LIGGGHTS_OT_GenerateRigidInput)
-    bpy.utils.register_class(LIGGGHTS_OT_GenerateDeformableInput)
+    bpy.utils.register_class(LIGGGHTS_OT_GenerateInput)
+
 
 def unregister():
     unregister_properties()
@@ -132,8 +133,7 @@ def unregister():
     bpy.utils.unregister_class(LIGGGHTS_OT_SetTray)
     bpy.utils.unregister_class(LIGGGHTS_OT_SetInsertionVolume)
     bpy.utils.unregister_class(LIGGGHTS_OT_SetSimulationVolume)
-    bpy.utils.unregister_class(LIGGGHTS_OT_GenerateRigidInput)
-    bpy.utils.unregister_class(LIGGGHTS_OT_GenerateDeformableInput)
+    bpy.utils.unregister_class(LIGGGHTS_OT_GenerateInput)
 
 if __name__ == "__main__":
     register()
