@@ -50,7 +50,14 @@ class LIGGGHTS_OT_GenerateDeformableInput(bpy.types.Operator):
         ins_max = scene.liggghts_insertion_volume.bound_box[6]
 
         write_setup_file(setup_filepath, simulation_params, sim_min, sim_max, ins_min, ins_max)
-        write_run_file(run_filepath, simulation_params, moving_objects, frame_rate=1, deformable=True)
+
+        # Calculate timesteps per frame
+        frame_rate = scene.liggghts_framerate  # Use the framerate from the UI
+        frame_duration = 1 / frame_rate
+        timesteps_per_frame = int(frame_duration / scene.liggghts_timestep)
+
+        # Pass timesteps_per_frame to write_run_file
+        write_run_file(run_filepath, simulation_params, moving_objects, frame_rate=frame_rate, deformable=True, timesteps_per_frame=timesteps_per_frame)
 
         self.report({'INFO'}, f"Deformable input files generated in {output_dir}")
         return {'FINISHED'}

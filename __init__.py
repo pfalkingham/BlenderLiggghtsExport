@@ -34,6 +34,7 @@ def register_properties():
     bpy.types.Scene.liggghts_youngs_modulus = bpy.props.FloatProperty(name="Young's Modulus", default=5.0e7)
     bpy.types.Scene.liggghts_cohesion = bpy.props.FloatProperty(name="Cohesion", default=75000)
     bpy.types.Scene.liggghts_poisson_ratio = bpy.props.FloatProperty(name="Poisson Ratio", default=0.4)
+    bpy.types.Scene.liggghts_framerate = bpy.props.FloatProperty(name="Framerate", default=250.0, precision=1)
 
 def unregister_properties():
     del bpy.types.Scene.liggghts_moving_objects
@@ -48,6 +49,7 @@ def unregister_properties():
     del bpy.types.Scene.liggghts_youngs_modulus
     del bpy.types.Scene.liggghts_cohesion
     del bpy.types.Scene.liggghts_poisson_ratio
+    del bpy.types.Scene.liggghts_framerate
 
     bpy.utils.unregister_class(LIGGGHTS_MovingObjectItem)
 

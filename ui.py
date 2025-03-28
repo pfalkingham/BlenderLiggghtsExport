@@ -44,6 +44,7 @@ class LIGGGHTS_PT_MainPanel(bpy.types.Panel):
         layout.prop(scene, "liggghts_youngs_modulus", text="Young's Modulus")
         layout.prop(scene, "liggghts_cohesion", text="Cohesion")
         layout.prop(scene, "liggghts_poisson_ratio", text="Poisson Ratio")
+        layout.prop(scene, "liggghts_framerate", text="Framerate")
 
         # Generate Buttons
         layout.label(text="Generate LIGGGHTS Input Files:")
