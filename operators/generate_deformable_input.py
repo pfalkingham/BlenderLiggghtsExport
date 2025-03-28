@@ -1,6 +1,7 @@
 import bpy
 import os
 from ..utils.mesh_utils import export_deformable_stls
+from ..utils.file_writer import write_setup_file, write_run_file
 
 class LIGGGHTS_OT_GenerateDeformableInput(bpy.types.Operator):
     """Generate LIGGGHTS input files for deformable meshes"""
@@ -23,18 +24,25 @@ class LIGGGHTS_OT_GenerateDeformableInput(bpy.types.Operator):
         frame_end = scene.frame_end
         export_deformable_stls(output_dir, moving_objects, frame_start, frame_end)
 
-        # Generate setup.liggghts file
+        # Generate setup.liggghts and run.liggghts files
         setup_filepath = os.path.join(output_dir, "setup.liggghts")
-        with open(setup_filepath, "w") as setup_file:
-            setup_file.write("# LIGGGHTS setup script\n")
-            setup_file.write(f"# Simulation volume: {scene.liggghts_simulation_volume.name}\n")
-            setup_file.write(f"# Tray: {scene.liggghts_tray.name}\n")
-            setup_file.write(f"# Insertion volume: {scene.liggghts_insertion_volume.name}\n")
-            setup_file.write(f"# Radius: {scene.liggghts_radius}\n")
-            setup_file.write(f"# Timestep: {scene.liggghts_timestep}\n")
-            setup_file.write(f"# Young's Modulus: {scene.liggghts_youngs_modulus}\n")
-            setup_file.write(f"# Cohesion: {scene.liggghts_cohesion}\n")
-            setup_file.write(f"# Poisson Ratio: {scene.liggghts_poisson_ratio}\n")
+        run_filepath = os.path.join(output_dir, "run.liggghts")
+
+        simulation_params = {
+            "radius": scene.liggghts_radius,
+            "timestep": scene.liggghts_timestep,
+            "youngs_modulus": scene.liggghts_youngs_modulus,
+            "cohesion": scene.liggghts_cohesion,
+            "poisson_ratio": scene.liggghts_poisson_ratio
+        }
+
+        sim_min = scene.liggghts_simulation_volume.bound_box[0]
+        sim_max = scene.liggghts_simulation_volume.bound_box[6]
+        ins_min = scene.liggghts_insertion_volume.bound_box[0]
+        ins_max = scene.liggghts_insertion_volume.bound_box[6]
+
+        write_setup_file(setup_filepath, simulation_params, sim_min, sim_max, ins_min, ins_max)
+        write_run_file(run_filepath, simulation_params, moving_objects, frame_rate=1, deformable=True)
 
         self.report({'INFO'}, f"Deformable input files generated in {output_dir}")
         return {'FINISHED'}

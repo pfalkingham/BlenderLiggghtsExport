@@ -178,15 +178,17 @@ def write_run_file(filepath, simulation_params, moving_objects, frame_rate, defo
                 curr_rotation = obj.matrix_world.to_euler()
 
                 translation = curr_location - prev_location
-                rotation_diff = curr_rotation - prev_rotation
 
-                file.write(f"fix move_{obj.name}_{frame} all move/mesh mesh {obj.name} linear {translation.x * frame_rate} {translation.y * frame_rate} {translation.z * frame_rate}\n")
+                prev_rotation_quat = prev_rotation.to_quaternion()
+                curr_rotation_quat = curr_rotation.to_quaternion()
+                rotation_diff_quat = curr_rotation_quat.rotation_difference(prev_rotation_quat)
 
-                if rotation_diff.length > 0:
-                    axis = rotation_diff.normalized()
-                    angle = rotation_diff.length * (180 / math.pi)
+                axis, angle = rotation_diff_quat.axis, rotation_diff_quat.angle
+                if angle > 0:
                     period = 360 / (angle * frame_rate)
                     file.write(f"fix rotate_{obj.name}_{frame} all move/mesh mesh {obj.name} rotate origin {prev_location.x} {prev_location.y} {prev_location.z} axis {axis.x} {axis.y} {axis.z} period {period}\n")
+
+                file.write(f"fix move_{obj.name}_{frame} all move/mesh mesh {obj.name} linear {translation.x * frame_rate} {translation.y * frame_rate} {translation.z * frame_rate}\n")
 
             file.write(f"run {int(frame_rate)}\n")
 
