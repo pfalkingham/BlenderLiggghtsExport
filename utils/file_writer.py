@@ -199,4 +199,5 @@ def write_run_file(filepath, simulation_params, moving_objects):
 
             for obj in moving_objects:
                 file.write(f"unfix move_{obj.name}_{frame}\n")
-                file.write(f"unfix rotate_{obj.name}_{frame}\n")
+                if angle > 0:
+                    file.write(f"unfix rotate_{obj.name}_{frame}\n")
