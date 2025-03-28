@@ -1,5 +1,6 @@
 import bpy
 import os
+from mathutils import Vector
 from ..utils.mesh_utils import export_rigid_stls
 from ..utils.file_writer import write_setup_file, write_run_file
 
@@ -42,10 +43,15 @@ class LIGGGHTS_OT_GenerateRigidInput(bpy.types.Operator):
             "poisson_ratio": scene.liggghts_poisson_ratio
         }
 
-        sim_min = scene.liggghts_simulation_volume.bound_box[0]
-        sim_max = scene.liggghts_simulation_volume.bound_box[6]
-        ins_min = scene.liggghts_insertion_volume.bound_box[0]
-        ins_max = scene.liggghts_insertion_volume.bound_box[6]
+        # Calculate world-space bounds for simulation and insertion volumes
+        def calculate_world_bounds(obj):
+            world_coords = [obj.matrix_world @ Vector(corner) for corner in obj.bound_box]
+            min_coords = Vector((min(v.x for v in world_coords), min(v.y for v in world_coords), min(v.z for v in world_coords)))
+            max_coords = Vector((max(v.x for v in world_coords), max(v.y for v in world_coords), max(v.z for v in world_coords)))
+            return min_coords, max_coords
+
+        sim_min, sim_max = calculate_world_bounds(scene.liggghts_simulation_volume)
+        ins_min, ins_max = calculate_world_bounds(scene.liggghts_insertion_volume)
 
         write_setup_file(setup_filepath, simulation_params, sim_min, sim_max, ins_min, ins_max)
 
