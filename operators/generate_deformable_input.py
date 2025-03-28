@@ -24,6 +24,14 @@ class LIGGGHTS_OT_GenerateDeformableInput(bpy.types.Operator):
         frame_end = scene.frame_end
         export_deformable_stls(output_dir, moving_objects, frame_start, frame_end)
 
+        # Export tray as STL
+        if scene.liggghts_tray:
+            tray_filepath = os.path.join(output_dir, "simtray.stl")
+            bpy.ops.object.select_all(action='DESELECT')
+            scene.liggghts_tray.select_set(True)
+            bpy.context.view_layer.objects.active = scene.liggghts_tray
+            bpy.ops.wm.stl_export(filepath=tray_filepath, export_selected_objects=True)
+
         # Generate setup.liggghts and run.liggghts files
         setup_filepath = os.path.join(output_dir, "setup.liggghts")
         run_filepath = os.path.join(output_dir, "run.liggghts")

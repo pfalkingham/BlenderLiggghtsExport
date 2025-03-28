@@ -22,6 +22,14 @@ class LIGGGHTS_OT_GenerateRigidInput(bpy.types.Operator):
         moving_objects = [bpy.data.objects[item.name] for item in scene.liggghts_moving_objects]
         export_rigid_stls(output_dir, moving_objects)
 
+        # Export tray as STL
+        if scene.liggghts_tray:
+            tray_filepath = os.path.join(output_dir, "simtray.stl")
+            bpy.ops.object.select_all(action='DESELECT')
+            scene.liggghts_tray.select_set(True)
+            bpy.context.view_layer.objects.active = scene.liggghts_tray
+            bpy.ops.wm.stl_export(filepath=tray_filepath, export_selected_objects=True)
+
         # Generate setup.liggghts and run.liggghts files
         setup_filepath = os.path.join(output_dir, "setup.liggghts")
         run_filepath = os.path.join(output_dir, "run.liggghts")

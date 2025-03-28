@@ -2,6 +2,10 @@ import os
 import math
 import bpy
 
+def format_float(value, precision=6):
+    """Format a floating-point number to a specific precision."""
+    return f"{value:.{precision}f}"
+
 def write_setup_file(filepath, simulation_params, sim_min, sim_max, ins_min, ins_max):
     """Write the setup.liggghts file with the given simulation parameters and extents."""
     with open(filepath, "w") as file:
@@ -10,13 +14,13 @@ def write_setup_file(filepath, simulation_params, sim_min, sim_max, ins_min, ins
         file.write("shell mkdir post\n\n")
 
         file.write("#----------SYSTEM VARIABLES----------#\n")
-        file.write(f"variable r equal {simulation_params['radius']}\n")
-        file.write(f"variable E equal {simulation_params['youngs_modulus']}\n")
+        file.write(f"variable r equal {format_float(simulation_params['radius'])}\n")
+        file.write(f"variable E equal {format_float(simulation_params['youngs_modulus'])}\n")
         file.write(f"variable f equal 0.8\n")
-        file.write(f"variable c equal {simulation_params['cohesion']}\n")
+        file.write(f"variable c equal {format_float(simulation_params['cohesion'])}\n")
         file.write(f"variable d equal 1200\n")
-        file.write(f"variable v equal {simulation_params['poisson_ratio']}\n")
-        file.write(f"variable s equal {simulation_params['timestep']}\n")
+        file.write(f"variable v equal {format_float(simulation_params['poisson_ratio'])}\n")
+        file.write(f"variable s equal {format_float(simulation_params['timestep'])}\n")
         file.write(f"variable t equal 1\n")
         file.write(f"variable n equal round($t/$s)\n\n")
 
@@ -29,7 +33,7 @@ def write_setup_file(filepath, simulation_params, sim_min, sim_max, ins_min, ins
         file.write("neighbor $r bin\n")
         file.write("neigh_modify every 1 delay 0 check yes\n\n")
 
-        file.write(f"region domain block {sim_min[0]} {sim_max[0]} {sim_min[1]} {sim_max[1]} {sim_min[2]} {sim_max[2]} units box\n")
+        file.write(f"region domain block {format_float(sim_min[0])} {format_float(sim_max[0])} {format_float(sim_min[1])} {format_float(sim_max[1])} {format_float(sim_min[2])} {format_float(sim_max[2])} units box\n")
         file.write("create_box 1 domain\n\n")
 
         file.write("#----------MATERIAL PROPERTIES----------#\n")
@@ -43,7 +47,7 @@ def write_setup_file(filepath, simulation_params, sim_min, sim_max, ins_min, ins
         file.write("#----------PARTICLE INSERTION----------#\n")
         file.write("fix pts1 all particletemplate/sphere 15485863 atom_type 1 density constant $d radius constant $r\n")
         file.write("fix pdd1 all particledistribution/discrete 32452843 1 pts1 1.0\n")
-        file.write(f"region ins_tray block {ins_min[0]} {ins_max[0]} {ins_min[1]} {ins_max[1]} {ins_min[2]} {ins_max[2]} units box\n")
+        file.write(f"region ins_tray block {format_float(ins_min[0])} {format_float(ins_max[0])} {format_float(ins_min[1])} {format_float(ins_max[1])} {format_float(ins_min[2])} {format_float(ins_max[2])} units box\n")
         file.write("fix ins all insert/pack seed 86028157 distributiontemplate pdd1 insert_every 10000 overlapcheck yes all_in yes region ins_tray volumefraction_region 0.6\n\n")
 
         file.write("#----------WALLS----------#\n")
@@ -78,13 +82,13 @@ def write_run_file(filepath, simulation_params, moving_objects, frame_rate, defo
         file.write("shell mkdir post\n\n")
 
         file.write("#----------SYSTEM VARIABLES----------#\n")
-        file.write(f"variable r equal {simulation_params['radius']}\n")
-        file.write(f"variable E equal {simulation_params['youngs_modulus']}\n")
+        file.write(f"variable r equal {format_float(simulation_params['radius'])}\n")
+        file.write(f"variable E equal {format_float(simulation_params['youngs_modulus'])}\n")
         file.write("variable f equal 0.8\n")
-        file.write(f"variable c equal {simulation_params['cohesion']}\n")
+        file.write(f"variable c equal {format_float(simulation_params['cohesion'])}\n")
         file.write("variable d equal 1200\n")
-        file.write(f"variable v equal {simulation_params['poisson_ratio']}\n")
-        file.write(f"variable s equal {simulation_params['timestep']}\n")
+        file.write(f"variable v equal {format_float(simulation_params['poisson_ratio'])}\n")
+        file.write(f"variable s equal {format_float(simulation_params['timestep'])}\n")
         file.write("variable e equal 4000\n\n")
 
         file.write("#----------SIMULATION SETTINGS----------#\n")
@@ -186,9 +190,9 @@ def write_run_file(filepath, simulation_params, moving_objects, frame_rate, defo
                 axis, angle = rotation_diff_quat.axis, rotation_diff_quat.angle
                 if angle > 0:
                     period = 360 / (angle * frame_rate)
-                    file.write(f"fix rotate_{obj.name}_{frame} all move/mesh mesh {obj.name} rotate origin {prev_location.x} {prev_location.y} {prev_location.z} axis {axis.x} {axis.y} {axis.z} period {period}\n")
+                    file.write(f"fix rotate_{obj.name}_{frame} all move/mesh mesh {obj.name} rotate origin {format_float(prev_location.x)} {format_float(prev_location.y)} {format_float(prev_location.z)} axis {format_float(axis.x)} {format_float(axis.y)} {format_float(axis.z)} period {format_float(period)}\n")
 
-                file.write(f"fix move_{obj.name}_{frame} all move/mesh mesh {obj.name} linear {translation.x * frame_rate} {translation.y * frame_rate} {translation.z * frame_rate}\n")
+                file.write(f"fix move_{obj.name}_{frame} all move/mesh mesh {obj.name} linear {format_float(translation.x * frame_rate)} {format_float(translation.y * frame_rate)} {format_float(translation.z * frame_rate)}\n")
 
             file.write(f"run {int(frame_rate)}\n")
 
