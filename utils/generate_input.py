@@ -8,6 +8,9 @@ def generate_input_files(context, output_dir, deformable):
     """Generate LIGGGHTS input files for rigid or deformable meshes."""
     scene = context.scene
 
+    #we need to set the frame to the beggining of the animation here
+    bpy.context.scene.frame_set(scene.frame_start)
+
     # Export moving objects as STL files
     moving_objects = [bpy.data.objects[item.name] for item in scene.liggghts_moving_objects]
     if deformable:

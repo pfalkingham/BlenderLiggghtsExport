@@ -175,6 +175,7 @@ def write_run_file(filepath, simulation_params, moving_objects):
         frame_end = scene.frame_end
 
         rotate_written = {}
+        move_written = {}
         for frame in range(frame_start + 1, frame_end + 1):
             for obj in moving_objects:
                 prev_frame = frame - 1
@@ -190,22 +191,27 @@ def write_run_file(filepath, simulation_params, moving_objects):
 
                 prev_rotation_quat = prev_rotation.to_quaternion()
                 curr_rotation_quat = curr_rotation.to_quaternion()
-                rotation_diff_quat = curr_rotation_quat.rotation_difference(prev_rotation_quat)
+                rotation_diff_quat = prev_rotation_quat.rotation_difference(curr_rotation_quat)
 
                 axis, angle = rotation_diff_quat.axis, rotation_diff_quat.angle
 
                 if angle > 0:
-                    period = 360 / (angle * simulation_params['frame_rate'])
+                    period = 360 / (math.degrees(angle) * simulation_params['frame_rate'])
                     file.write(f"fix rotate_{obj.name}_{frame} all move/mesh mesh {obj.name} rotate origin {format_float(prev_location.x)} {format_float(prev_location.y)} {format_float(prev_location.z)} axis {format_float(axis.x)} {format_float(axis.y)} {format_float(axis.z)} period {format_float(period)}\n")
                     rotate_written[(obj.name, frame)] = True
                 else:
                     rotate_written[(obj.name, frame)] = False
 
-                file.write(f"fix move_{obj.name}_{frame} all move/mesh mesh {obj.name} linear {format_float(translation.x * simulation_params['frame_rate'])} {format_float(translation.y * simulation_params['frame_rate'])} {format_float(translation.z * simulation_params['frame_rate'])}\n")
+                if translation.length > 0:
+                    file.write(f"fix move_{obj.name}_{frame} all move/mesh mesh {obj.name} linear {format_float(translation.x * simulation_params['frame_rate'])} {format_float(translation.y * simulation_params['frame_rate'])} {format_float(translation.z * simulation_params['frame_rate'])}\n")
+                    move_written[(obj.name, frame)] = True
+                else:
+                    move_written[(obj.name, frame)] = False
 
             file.write(f"run {simulation_params['timesteps_per_frame']}\n")
 
             for obj in moving_objects:
-                file.write(f"unfix move_{obj.name}_{frame}\n")
+                if move_written.get((obj.name, frame), False):
+                    file.write(f"unfix move_{obj.name}_{frame}\n")
                 if rotate_written.get((obj.name, frame), False):
                     file.write(f"unfix rotate_{obj.name}_{frame}\n")
