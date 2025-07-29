@@ -23,7 +23,7 @@ def generate_input_files(context, output_dir, deformable):
         bpy.ops.object.select_all(action='DESELECT')
         scene.liggghts_tray.select_set(True)
         bpy.context.view_layer.objects.active = scene.liggghts_tray
-        bpy.ops.wm.stl_export(filepath=tray_filepath, export_selected_objects=True)
+        bpy.ops.wm.stl_export(filepath=tray_filepath, export_selected_objects=True, ascii_format=True)
 
     # Calculate frame rate and timesteps per frame
     frame_rate = scene.liggghts_framerate

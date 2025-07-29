@@ -1,5 +1,6 @@
 import os
 import math
+
 import bpy
 
 def format_float(value, precision=6):
@@ -55,7 +56,7 @@ def write_setup_file(filepath, simulation_params, sim_min, sim_max, ins_min, ins
         file.write("fix cont all wall/gran model hertz tangential history mesh n_meshes 1 meshes simtray\n\n")
 
         file.write("#----------FORCE MODEL----------#\n")
-        file.write("pair_style gran model hertz tangential history cohesion sjkr tangential_reduce on\n")
+        file.write("pair_style gran model hertz tangential history cohesion sjkr2 \n")
         file.write("pair_coeff * *\n\n")
 
         file.write("#----------ADDITIONAL SETTINGS----------#\n")
@@ -66,6 +67,9 @@ def write_setup_file(filepath, simulation_params, sim_min, sim_max, ins_min, ins
         file.write("#----------COMPUTATION----------#\n")
         file.write("compute rke all erotate/sphere\n")
         file.write("compute mudisp all displace/atom\n\n")
+
+        file.write("#----------DUMP FILES----------#\n")
+        file.write("#dump dmp all custom $e post/dump*.txt id x y z radius\n")
 
         file.write("#----------RUN SPECIFICS----------#\n")
         file.write("run 200000\n")
@@ -112,7 +116,7 @@ def write_run_file(filepath, simulation_params, moving_objects):
         file.write("fix m6 all property/global cohesionEnergyDensity peratomtypepair 1 $c\n\n")
 
         file.write("#----------FORCE MODEL----------#\n")
-        file.write("pair_style gran model hertz tangential history cohesion sjkr2 tangential_reduce on\n")
+        file.write("pair_style gran model hertz tangential history cohesion sjkr2\n")
         file.write("pair_coeff * *\n\n")
 
         file.write("#----------ADDITIONAL SETTINGS----------#\n")
@@ -170,6 +174,7 @@ def write_run_file(filepath, simulation_params, moving_objects):
         frame_start = scene.frame_start
         frame_end = scene.frame_end
 
+        rotate_written = {}
         for frame in range(frame_start + 1, frame_end + 1):
             for obj in moving_objects:
                 prev_frame = frame - 1
@@ -192,6 +197,9 @@ def write_run_file(filepath, simulation_params, moving_objects):
                 if angle > 0:
                     period = 360 / (angle * simulation_params['frame_rate'])
                     file.write(f"fix rotate_{obj.name}_{frame} all move/mesh mesh {obj.name} rotate origin {format_float(prev_location.x)} {format_float(prev_location.y)} {format_float(prev_location.z)} axis {format_float(axis.x)} {format_float(axis.y)} {format_float(axis.z)} period {format_float(period)}\n")
+                    rotate_written[(obj.name, frame)] = True
+                else:
+                    rotate_written[(obj.name, frame)] = False
 
                 file.write(f"fix move_{obj.name}_{frame} all move/mesh mesh {obj.name} linear {format_float(translation.x * simulation_params['frame_rate'])} {format_float(translation.y * simulation_params['frame_rate'])} {format_float(translation.z * simulation_params['frame_rate'])}\n")
 
@@ -199,5 +207,5 @@ def write_run_file(filepath, simulation_params, moving_objects):
 
             for obj in moving_objects:
                 file.write(f"unfix move_{obj.name}_{frame}\n")
-                if angle > 0:
+                if rotate_written.get((obj.name, frame), False):
                     file.write(f"unfix rotate_{obj.name}_{frame}\n")

@@ -13,7 +13,7 @@ def export_stl(filepath, objects):
     for obj in objects:
         obj.select_set(True)
     bpy.context.view_layer.objects.active = objects[0]  # Set an active object
-    bpy.ops.wm.stl_export(filepath=filepath, export_selected_objects=True)
+    bpy.ops.wm.stl_export(filepath=filepath, export_selected_objects=True, ascii_format=True)
 
 def export_rigid_stls(output_dir, objects):
     """Export each object as a separate STL file for rigid meshes."""
