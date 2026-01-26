@@ -8,8 +8,8 @@ from .utils.generate_input import LIGGGHTS_OT_GenerateInput
 bl_info = {
     "name": "LIGGGHTS Addon",
     "author": "Your Name",
-    "version": (1, 0, 0),
-    "blender": (3, 0, 0),
+    "version": (2, 0, 0),
+    "blender": (5, 0, 0),
     "location": "View3D > Tool Shelf > LIGGGHTS Tab",
     "description": "Addon for generating LIGGGHTS input files.",
     "warning": "",

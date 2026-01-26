@@ -181,19 +181,20 @@ def write_run_file(filepath, simulation_params, moving_objects):
                 prev_frame = frame - 1
                 scene.frame_set(prev_frame)
                 prev_location = obj.matrix_world.translation.copy()
-                prev_rotation = obj.matrix_world.to_euler()
+                # Get quaternion directly from world matrix (not via euler)
+                prev_rotation_quat = obj.matrix_world.to_quaternion()
 
                 scene.frame_set(frame)
                 curr_location = obj.matrix_world.translation.copy()
-                curr_rotation = obj.matrix_world.to_euler()
+                # Get quaternion directly from world matrix (not via euler)
+                curr_rotation_quat = obj.matrix_world.to_quaternion()
 
                 translation = curr_location - prev_location
 
-                prev_rotation_quat = prev_rotation.to_quaternion()
-                curr_rotation_quat = curr_rotation.to_quaternion()
-                rotation_diff_quat = prev_rotation_quat.rotation_difference(curr_rotation_quat)
+                # This matches Maya's: quat1.inverse() * quat2
+                rotation_diff_quat = curr_rotation_quat @ prev_rotation_quat.inverted()
 
-                axis, angle = rotation_diff_quat.axis, rotation_diff_quat.angle
+                axis, angle = rotation_diff_quat.to_axis_angle()
 
                 if angle > 0:
                     period = 360 / (math.degrees(angle) * simulation_params['frame_rate'])
