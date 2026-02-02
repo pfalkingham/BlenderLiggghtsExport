@@ -31,7 +31,7 @@ def register_properties():
     bpy.types.Scene.liggghts_simulation_volume = bpy.props.PointerProperty(type=bpy.types.Object)
 
     bpy.types.Scene.liggghts_radius = bpy.props.FloatProperty(name="Radius", default=0.001, precision=6)
-    bpy.types.Scene.liggghts_timestep = bpy.props.FloatProperty(name="Timestep", default=0.000001, precision=6)
+    bpy.types.Scene.liggghts_timestep = bpy.props.FloatProperty(name="Timestep", default=0.000001, precision=15)
     bpy.types.Scene.liggghts_youngs_modulus = bpy.props.FloatProperty(name="Young's Modulus", default=5.0e7)
     bpy.types.Scene.liggghts_cohesion = bpy.props.FloatProperty(name="Cohesion", default=75000)
     bpy.types.Scene.liggghts_poisson_ratio = bpy.props.FloatProperty(name="Poisson Ratio", default=0.4)
