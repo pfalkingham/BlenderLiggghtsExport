@@ -21,7 +21,7 @@ def write_setup_file(filepath, simulation_params, sim_min, sim_max, ins_min, ins
         file.write(f"variable c equal {format_float(simulation_params['cohesion'])}\n")
         file.write(f"variable d equal 1200\n")
         file.write(f"variable v equal {format_float(simulation_params['poisson_ratio'])}\n")
-        file.write(f"variable s equal {format_float(simulation_params['timestep'], precision=15)}\n")
+        file.write(f"variable s equal {simulation_params['timestep']:.6e}\n")
         file.write(f"variable t equal 1\n")
         file.write(f"variable n equal round($t/$s)\n\n")
 
@@ -92,7 +92,7 @@ def write_run_file(filepath, simulation_params, moving_objects):
         file.write(f"variable c equal {format_float(simulation_params['cohesion'])}\n")
         file.write("variable d equal 1200\n")
         file.write(f"variable v equal {format_float(simulation_params['poisson_ratio'])}\n")
-        file.write(f"variable s equal {format_float(simulation_params['timestep'], precision=15)}\n")
+        file.write(f"variable s equal {simulation_params['timestep']:.6e}\n")
         file.write("variable e equal 4000\n\n")
 
         file.write("#----------SIMULATION SETTINGS----------#\n")

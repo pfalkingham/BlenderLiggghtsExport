@@ -21,6 +21,15 @@ bl_info = {
 class LIGGGHTS_MovingObjectItem(bpy.types.PropertyGroup):
     name: bpy.props.StringProperty(name="Object Name")
 
+def get_timestep_str(self):
+    return "{:.6e}".format(self.liggghts_timestep)
+
+def set_timestep_str(self, value):
+    try:
+        self.liggghts_timestep = float(value)
+    except ValueError:
+        pass
+
 def register_properties():
     bpy.utils.register_class(LIGGGHTS_MovingObjectItem)
     bpy.types.Scene.liggghts_moving_objects = bpy.props.CollectionProperty(type=LIGGGHTS_MovingObjectItem)
@@ -32,6 +41,12 @@ def register_properties():
 
     bpy.types.Scene.liggghts_radius = bpy.props.FloatProperty(name="Radius", default=0.001, precision=6)
     bpy.types.Scene.liggghts_timestep = bpy.props.FloatProperty(name="Timestep", default=0.000001, precision=15)
+    bpy.types.Scene.liggghts_timestep_str = bpy.props.StringProperty(
+        name="Timestep", 
+        get=get_timestep_str, 
+        set=set_timestep_str, 
+        description="Timestep in scientific notation"
+    )
     bpy.types.Scene.liggghts_youngs_modulus = bpy.props.FloatProperty(name="Young's Modulus", default=5.0e7)
     bpy.types.Scene.liggghts_cohesion = bpy.props.FloatProperty(name="Cohesion", default=75000)
     bpy.types.Scene.liggghts_poisson_ratio = bpy.props.FloatProperty(name="Poisson Ratio", default=0.4)
@@ -41,6 +56,7 @@ def unregister_properties():
     del bpy.types.Scene.liggghts_moving_objects
     del bpy.types.Scene.liggghts_moving_objects_index
 
+    del bpy.types.Scene.liggghts_timestep_str
     del bpy.types.Scene.liggghts_tray
     del bpy.types.Scene.liggghts_insertion_volume
     del bpy.types.Scene.liggghts_simulation_volume

@@ -40,7 +40,7 @@ class LIGGGHTS_PT_MainPanel(bpy.types.Panel):
         # Parameters
         layout.label(text="Parameters:")
         layout.prop(scene, "liggghts_radius", text="Radius")
-        layout.prop(scene, "liggghts_timestep", text="Timestep")
+        layout.prop(scene, "liggghts_timestep_str", text="Timestep")
         layout.prop(scene, "liggghts_youngs_modulus", text="Young's Modulus")
         layout.prop(scene, "liggghts_cohesion", text="Cohesion")
         layout.prop(scene, "liggghts_poisson_ratio", text="Poisson Ratio")
