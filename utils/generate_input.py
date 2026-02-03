@@ -31,7 +31,7 @@ def generate_input_files(context, output_dir, deformable):
     # Calculate frame rate and timesteps per frame
     frame_rate = scene.liggghts_framerate
     frame_duration = 1 / frame_rate
-    timesteps_per_frame = int(frame_duration / scene.liggghts_timestep)
+    timesteps_per_frame = round(frame_duration / scene.liggghts_timestep)
 
     # Set up simulation parameters
     setup_filepath = os.path.join(output_dir, "setup.liggghts")
