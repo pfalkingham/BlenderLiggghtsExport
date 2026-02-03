@@ -176,18 +176,28 @@ def write_run_file(filepath, simulation_params, moving_objects):
 
         rotate_written = {}
         move_written = {}
+        
+        # Initialize previous state at frame_start for quaternion continuity
+        prev_quats = {}
+        prev_locations = {}
+        scene.frame_set(frame_start)
+        for obj in moving_objects:
+            prev_quats[obj.name] = obj.matrix_world.to_quaternion()
+            prev_locations[obj.name] = obj.matrix_world.translation.copy()
+        
         for frame in range(frame_start + 1, frame_end + 1):
+            scene.frame_set(frame)
             for obj in moving_objects:
-                prev_frame = frame - 1
-                scene.frame_set(prev_frame)
-                prev_location = obj.matrix_world.translation.copy()
-                # Get quaternion directly from world matrix (not via euler)
-                prev_rotation_quat = obj.matrix_world.to_quaternion()
+                prev_location = prev_locations[obj.name]
+                prev_rotation_quat = prev_quats[obj.name]
 
-                scene.frame_set(frame)
                 curr_location = obj.matrix_world.translation.copy()
-                # Get quaternion directly from world matrix (not via euler)
                 curr_rotation_quat = obj.matrix_world.to_quaternion()
+                
+                # Ensure quaternion continuity - flip if in opposite hemisphere
+                # This prevents spurious 180-degree axis flips when q and -q represent the same rotation
+                if prev_rotation_quat.dot(curr_rotation_quat) < 0:
+                    curr_rotation_quat.negate()
 
                 translation = curr_location - prev_location
 
@@ -208,6 +218,10 @@ def write_run_file(filepath, simulation_params, moving_objects):
                     move_written[(obj.name, frame)] = True
                 else:
                     move_written[(obj.name, frame)] = False
+
+                # Store current state for next frame's continuity check
+                prev_quats[obj.name] = curr_rotation_quat.copy()
+                prev_locations[obj.name] = curr_location.copy()
 
             file.write(f"run {simulation_params['timesteps_per_frame']}\n")
 

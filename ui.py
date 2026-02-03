@@ -2,7 +2,7 @@ import bpy
 
 class LIGGGHTS_PT_MainPanel(bpy.types.Panel):
     """Main Panel for LIGGGHTS Addon"""
-    bl_label = "LIGGGHTS Input Generator v2.0"
+    bl_label = "LIGGGHTS Input Generator v2.1"
     bl_idname = "LIGGGHTS_PT_MainPanel"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
